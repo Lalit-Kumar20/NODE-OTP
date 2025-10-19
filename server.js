@@ -6,12 +6,11 @@ const port = 3000;
 const nodemailer = require("nodemailer");
 
 // OTP generator
-function generateOTP(length = 6) {
+function generateOTP() {
   return  Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-async function sendOTP(toEmail, whoEmail, whoPhone) {
-  const otp = generateOTP();
+async function sendOTP(toEmail, whoEmail, whoPhone,otp) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -46,10 +45,11 @@ app.use(express.json());
 app.post('/otp', async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
+  const otp = generateOTP()
 
   try {
-    await sendOTP("lalitk2282k@gmail.com", email, phone);
-    res.send("Otp Sent");
+    await sendOTP("lalitk2282k@gmail.com", email, phone,otp);
+    res.send({message: "OTP sent successfully", otp: otp});
   } catch (error) {
     res.status(500).send("Error sending OTP");
   }
