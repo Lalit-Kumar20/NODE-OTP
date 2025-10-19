@@ -27,12 +27,15 @@ async function sendOTP(toEmail, whoEmail, whoPhone) {
     text: `Email: ${whoEmail}, Phone: ${whoPhone} Your OTP is: ${otp}`,
   };
 
-  await transporter.sendMail(mailOptions);
-  console.log(`OTP ${otp} sent to ${toEmail}`);
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`OTP ${otp} sent to ${toEmail}`);
+  } catch (error) {
+    console.error(`Error sending OTP: ${error.message}`);
+  }
 }
 
 // Example usage
-
 
 // Middleware
 app.use(bodyParser.json());
@@ -40,12 +43,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Basic route
-app.post('/otp', (req, res) => {
+app.post('/otp', async (req, res) => {
   const email = req.body.email;
   const phone = req.body.phone;
-  //const currentOtp = Math.floor(1000 + Math.random() * 9000).toString();
-  sendOTP("lalitk2282k@gmail.com",email,phone);
-  res.send("Otp Sent");
+
+  try {
+    await sendOTP("lalitk2282k@gmail.com", email, phone);
+    res.send("Otp Sent");
+  } catch (error) {
+    res.status(500).send("Error sending OTP");
+  }
 });
 
 // Start server
